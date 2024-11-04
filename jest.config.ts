@@ -5,25 +5,23 @@ const config: JestConfigWithTsJest = {
   clearMocks: true,
   verbose: true,
   transform: {
-    "^.+\\.ts?$": [
-      "ts-jest",
+    '^.+\\.ts?$': [
+      'ts-jest',
       {
         useESM: true,
       },
     ],
   },
-  extensionsToTreatAsEsm: [".ts"],
+  extensionsToTreatAsEsm: ['.ts'],
   testPathIgnorePatterns: ['node_modules'],
-  testEnvironment: "node",
+  testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.test.ts'],
   testEnvironmentOptions: {
     NODE_ENV: 'test',
   },
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/'],
   coverageProvider: 'v8',
   coverageReporters: ['json', 'html'],
 };
