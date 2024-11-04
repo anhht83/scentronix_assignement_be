@@ -2,6 +2,7 @@ import nock from 'nock';
 import { findServer } from '../server.service';
 import { Server } from '../../interfaces/server.interface';
 import { OFFLINE_ERROR_MESSAGE } from '../../constants/server.constants';
+import { CONFIG } from '../../config';
 
 const mockServers: Server[] = [
   { url: "https://does-not-work.perfume.new", priority: 1 },
@@ -10,6 +11,8 @@ const mockServers: Server[] = [
   { url: "https://offline.scentronix.com", priority: 2 },
 ];
 
+const OVER_TIMEOUT = CONFIG.REQUEST_TIMEOUT + 100;
+
 describe("findServer", () => {
   beforeEach(() => {
     nock.cleanAll();
@@ -17,7 +20,7 @@ describe("findServer", () => {
 
   it("should return the online server with the lowest priority", async () => {
     // Mock server responses
-    nock("https://does-not-work.perfume.new").get("/").delay(6000).reply(500);
+    nock("https://does-not-work.perfume.new").get("/").delay(OVER_TIMEOUT).reply(500);
     nock("https://gitlab.com").get("/").reply(200);
     nock("http://app.scnt.me").get("/").reply(200);
     nock("https://offline.scentronix.com").get("/").reply(500);
@@ -38,10 +41,10 @@ describe("findServer", () => {
 
   it("should handle request timeouts gracefully", async () => {
     // Mock responses with delays beyond the timeout limit
-    nock("https://does-not-work.perfume.new").get("/").delay(6000).reply(200);
-    nock("https://gitlab.com").get("/").delay(6000).reply(200);
-    nock("http://app.scnt.me").get("/").delay(6000).reply(200);
-    nock("https://offline.scentronix.com").get("/").delay(6000).reply(200);
+    nock("https://does-not-work.perfume.new").get("/").delay(OVER_TIMEOUT).reply(200);
+    nock("https://gitlab.com").get("/").delay(OVER_TIMEOUT).reply(200);
+    nock("http://app.scnt.me").get("/").delay(OVER_TIMEOUT).reply(200);
+    nock("https://offline.scentronix.com").get("/").delay(OVER_TIMEOUT).reply(200);
 
     await expect(findServer(mockServers)).rejects.toThrow(OFFLINE_ERROR_MESSAGE);
   });
